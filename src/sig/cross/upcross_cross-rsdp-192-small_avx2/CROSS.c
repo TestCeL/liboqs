@@ -40,6 +40,8 @@
 #include "namespace.h"
 #include "pack_unpack.h"
 #include "randombytes.h"
+
+#include <oqs/common.h>
 #include "seedtree.h"
 
 static
@@ -126,6 +128,9 @@ void CROSS_keygen(sk_t *SK,
 	restr_vec_by_fp_matrix(s, e_bar, V_tr);
 	fp_dz_norm_synd(s);
 	pack_fp_syn(PK->s, s);
+	// cleanup sensitive data
+	OQS_MEM_cleanse(seed_e_seed_pk, sizeof(seed_e_seed_pk));
+	OQS_MEM_cleanse(e_bar, sizeof(e_bar));
 }
 
 /* sign cannot fail */
@@ -337,6 +342,15 @@ void CROSS_sign(const sk_t *const SK,
 			published_rsps++;
 		}
 	}
+
+	// cleanup sensitive data
+	OQS_MEM_cleanse(e_bar, sizeof(e_bar));
+	OQS_MEM_cleanse(root_seed, sizeof(root_seed));
+	OQS_MEM_cleanse(seed_tree, sizeof(seed_tree));
+	OQS_MEM_cleanse(round_seeds, sizeof(round_seeds));
+	OQS_MEM_cleanse(e_bar_prime, sizeof(e_bar_prime));
+	OQS_MEM_cleanse(v_bar, sizeof(v_bar));
+	OQS_MEM_cleanse(u_prime, sizeof(u_prime));
 }
 
 /* verify returns 1 if signature is ok, 0 otherwise */
