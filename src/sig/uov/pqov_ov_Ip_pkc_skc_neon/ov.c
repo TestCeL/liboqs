@@ -20,6 +20,8 @@
 #include "utils_hash.h"
 #include "utils_malloc.h"
 
+#include <oqs/common.h>
+
 
 #define MAX_ATTEMPT_VINEGAR  256
 
@@ -105,6 +107,11 @@ int ov_sign( uint8_t *signature, const sk_t *sk, const uint8_t *message, size_t 
     }
     hash_final_digest( NULL, 0, &h_vinegar_copy);   // free
     if ( MAX_ATTEMPT_VINEGAR <= n_attempt ) {
+    // cleanup sensitive data
+    OQS_MEM_cleanse(vinegar, _V_BYTE);
+    OQS_MEM_cleanse(x_o1, _O_BYTE);
+    OQS_MEM_cleanse(mat_l1, _O * _O_BYTE);
+    OQS_MEM_cleanse(r_l1_F1, _O_BYTE);
         return -1;
     }
 
@@ -120,6 +127,12 @@ int ov_sign( uint8_t *signature, const sk_t *sk, const uint8_t *message, size_t 
 
     // return: signature <- w || salt.
     memcpy( signature + _PUB_N_BYTE, salt, _SALT_BYTE );
+
+    // cleanup sensitive data
+    OQS_MEM_cleanse(vinegar, _V_BYTE);
+    OQS_MEM_cleanse(x_o1, _O_BYTE);
+    OQS_MEM_cleanse(mat_l1, _O * _O_BYTE);
+    OQS_MEM_cleanse(r_l1_F1, _O_BYTE);
 
     return 0;
 }

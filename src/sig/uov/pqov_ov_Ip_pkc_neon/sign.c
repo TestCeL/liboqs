@@ -14,6 +14,8 @@
 
 #include "utils_prng.h"
 
+#include <oqs/common.h>
+
 #if defined(_UTILS_SUPERCOP_)
 #include "crypto_sign.h"
 #endif
@@ -46,6 +48,9 @@ crypto_sign_keypair(unsigned char *pk, unsigned char *sk) {
     VALGRIND_MAKE_MEM_DEFINED(pk, OV_PUBLICKEYBYTES );  // mark return value as public data
     VALGRIND_MAKE_MEM_DEFINED(&r, sizeof(int) );  // mark return value as public data
     #endif
+
+    OQS_MEM_cleanse(sk_seed, LEN_SKSEED);
+
     return r;
 }
 
