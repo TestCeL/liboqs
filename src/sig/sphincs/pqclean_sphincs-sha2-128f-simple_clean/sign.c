@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <oqs/common.h>
+
 #include "address.h"
 #include "context.h"
 #include "fors.h"
@@ -68,6 +70,7 @@ int crypto_sign_seed_keypair(uint8_t *pk, uint8_t *sk,
 
     // cleanup
     free_hash_function(&ctx);
+    OQS_MEM_cleanse(ctx.sk_seed, SPX_N);
 
     memcpy(pk + SPX_N, sk + 3 * SPX_N, SPX_N);
 
@@ -83,6 +86,7 @@ int crypto_sign_keypair(uint8_t *pk, uint8_t *sk) {
     uint8_t seed[CRYPTO_SEEDBYTES];
     randombytes(seed, CRYPTO_SEEDBYTES);
     crypto_sign_seed_keypair(pk, sk, seed);
+    OQS_MEM_cleanse(seed, sizeof(seed));
 
     return 0;
 }
@@ -150,6 +154,8 @@ int crypto_sign_signature(uint8_t *sig, size_t *siglen,
     }
 
     free_hash_function(&ctx);
+    OQS_MEM_cleanse(ctx.sk_seed, SPX_N);
+    OQS_MEM_cleanse(optrand, sizeof(optrand));
 
     *siglen = SPX_BYTES;
 
